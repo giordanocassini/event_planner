@@ -18,19 +18,19 @@ services:
     build: .
     container_name: event2all-server
     volumes:
-      - ./:/home/node/app
+      - ./:/usr/src/app
     ports:
       - 3000:3000
     depends_on:
       - db
     restart: always
-  frontend:
-    build: ../event2allfrontend
-    container_name: event2all-frontend
-    volumes:
-      - ../event2allfrontend/:/home/node/app
-    ports:
-      - 8000:8000
-    depends_on:
-      - server
-    restart: always
+  # frontend:
+  #   build: ../event2allfrontend
+  #   container_name: event2all-frontend
+  #   volumes:
+  #     - ../event2allfrontend/:/home/node/app
+  #   ports:
+  #     - 8000:8000
+  #   depends_on:
+  #     - server
+  #   restart: always
