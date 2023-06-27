@@ -8,19 +8,17 @@ import CustomRequest from '../interfaces/CustomRequest';
 
 export class AuthController {
   static async auth(req: CustomRequest, res: Response) {
-    const { email, password } = req.body;
-    // let user: User = req.user;
+    const unencryptedPassword = req.body.password;
 
     const user: User = req.body.user;
-    
 
-    if (!AuthController.checkIfUnencryptedPasswordIsValid(password, user)) {
+    if (!AuthController.checkIfUnencryptedPasswordIsValid(unencryptedPassword, user.password)) {
       return res.status(401).send('Email or password not valid!');
     }
 
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET ?? '', { expiresIn: '8h' }); //Alterar o jwt secret
 
-    const { password: _, ...userLogin } = user;
+    const { password: _, ...userLogin } = user; // this removes password from user object creating userLogin without it
 
     return res.json({ user: userLogin, token: token });
   }
@@ -58,7 +56,7 @@ export class AuthController {
       return res.status(401).send('Old password not match');
     }
 
-    if (!this.checkIfUnencryptedPasswordIsValid(oldPassword, user)) {
+    if (!this.checkIfUnencryptedPasswordIsValid(oldPassword, user.password)) {
       return res.status(401).send('Old password not match');
     }
 
@@ -75,7 +73,7 @@ export class AuthController {
     return res.status(204).send('Password changed!');
   };
 
-  static checkIfUnencryptedPasswordIsValid(unencryptedPassword: string, user: User){
-    return bcrypt.compareSync(unencryptedPassword, user.password);
+  static checkIfUnencryptedPasswordIsValid(unencryptedPassword: string, encryptedPassword: string){
+    return bcrypt.compareSync(unencryptedPassword, encryptedPassword);
 }
 }
