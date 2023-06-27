@@ -8,12 +8,13 @@ import CustomRequest from '../interfaces/CustomRequest';
 
 export class AuthController {
   static async auth(req: CustomRequest, res: Response) {
-    // const { email, password } = req.body;
+    const { email, password } = req.body;
     // let user: User = req.user;
 
     const user: User = req.body.user;
+    
 
-    if (!user.checkIfUnencryptedPasswordIsValid(password)) {
+    if (!AuthController.checkIfUnencryptedPasswordIsValid(password, user)) {
       return res.status(401).send('Email or password not valid!');
     }
 
@@ -57,7 +58,7 @@ export class AuthController {
       return res.status(401).send('Old password not match');
     }
 
-    if (!user.checkIfUnencryptedPasswordIsValid(oldPassword)) {
+    if (!this.checkIfUnencryptedPasswordIsValid(oldPassword, user)) {
       return res.status(401).send('Old password not match');
     }
 
@@ -73,4 +74,8 @@ export class AuthController {
 
     return res.status(204).send('Password changed!');
   };
+
+  static checkIfUnencryptedPasswordIsValid(unencryptedPassword: string, user: User){
+    return bcrypt.compareSync(unencryptedPassword, user.password);
+}
 }

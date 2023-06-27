@@ -15,6 +15,6 @@ export const findUser = async (req: CustomRequest, res: Response, next: NextFunc
   }
 
   req.body.user = user;
-
+  
   next();
 };
