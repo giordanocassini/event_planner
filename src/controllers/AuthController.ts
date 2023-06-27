@@ -4,18 +4,14 @@ import { userRepository } from './../repositories/userRepository';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { Request, Response } from 'express';
+import CustomRequest from '../interfaces/CustomRequest';
 
 export class AuthController {
-  static async auth(req: Request, res: Response) {
-    const { email, password } = req.body;
+  static async auth(req: CustomRequest, res: Response) {
+    // const { email, password } = req.body;
+    // let user: User = req.user;
 
-    let user: User;
-
-    try {
-      user = await userRepository.findOneOrFail({ where: { email } });
-    } catch (error) {
-      return res.status(404).send('User not found!');
-    }
+    const user: User = req.body.user;
 
     if (!user.checkIfUnencryptedPasswordIsValid(password)) {
       return res.status(401).send('Email or password not valid!');
