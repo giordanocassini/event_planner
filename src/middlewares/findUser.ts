@@ -1,9 +1,9 @@
-import { Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { User } from './../entities/User';
 import { userRepository } from './../repositories/userRepository';
-import CustomRequest from '../interfaces/CustomRequest';
+import UserRequest from '../interfaces/UserRequest'
 
-export const findUser = async (req: CustomRequest, res: Response, next: NextFunction) => {
+export const findUser = async (req: UserRequest, res: Response, next: NextFunction) => {
   const { email } = req.body;
 
   let user: User;
@@ -14,7 +14,7 @@ export const findUser = async (req: CustomRequest, res: Response, next: NextFunc
     return res.status(404).send('User not found!');
   }
 
-  req.body.user = user;
-  
+  req.user = user;
+
   next();
 };
