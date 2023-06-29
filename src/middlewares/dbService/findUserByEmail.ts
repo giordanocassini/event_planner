@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
-import { User } from './../entities/User';
-import UserRequest from '../interfaces/express/UserRequest'
-import UserDbService from '../services/UserDbService'
+import { User } from '../../entities/User';
+import UserRequest from '../../interfaces/express/UserRequest'
+import UserDbService from '../../services/UserDbService'
 
 const userDbService: UserDbService = UserDbService.getInstance();
 
-export const findUser = async (req: UserRequest, res: Response, next: NextFunction) => {
+export const findUserByEmail = async (req: UserRequest, res: Response, next: NextFunction) => {
   const { email } = req.body;
 
   let user: User;

@@ -1,6 +1,6 @@
 import { ListController } from "../controllers/ToDoListController";
 import { Router } from "express";
-import { checkJwt } from "./../middlewares/checkJwt";
+import { checkJwt } from "../middlewares/auth/checkJwt";
 
 const router = Router();
 

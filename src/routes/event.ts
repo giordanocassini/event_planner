@@ -1,4 +1,4 @@
-import { checkJwt } from "./../middlewares/checkJwt";
+import { checkJwt } from "../middlewares/auth/checkJwt";
 import { EventController } from "./../controllers/EventController";
 import { Router } from "express";
 

@@ -1,10 +1,12 @@
 import { validate } from 'class-validator';
 import { User } from './../entities/User';
-import { userRepository } from './../repositories/userRepository';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import UserRequest from '../interfaces/express/UserRequest';
+import UserDbService from '../services/UserDbService';
+
+const userDbService: UserDbService = UserDbService.getInstance();
 
 export class AuthController {
   static async auth(req: UserRequest, res: Response) {
@@ -25,10 +27,7 @@ export class AuthController {
 
   //stop refactor here
 
-  static async changePassword(req: Request, res: Response) {
-    let jwtPayLoad = res.locals.jwtPayLoad;
-
-    const { id } = jwtPayLoad;
+  static async changePassword(req: UserRequest, res: Response) {
 
     let { oldPassword, newPassword } = req.body;
 
@@ -36,12 +35,7 @@ export class AuthController {
       return res.status(400).send();
     }
 
-    let user: User;
-    try {
-      user = await userRepository.findOneOrFail({ where: { id } });
-    } catch (error) {
-      return res.status(401).send('User not found');
-    }
+    const user: User = req.user;
 
     if (!AuthController.checkIfUnencryptedPasswordIsValid(oldPassword, user.password)) {
       return res.status(401).send('Old password do not match');
@@ -55,12 +49,15 @@ export class AuthController {
     newPassword = bcrypt.hashSync(newPassword, 10);
     user.password = newPassword;
 
-    userRepository.save(user);
-
-    return res.status(204).send('Password changed!');
+    try {
+      userDbService.insert(user);
+    } catch (error) {
+      res.status(500).send('server failded');
+    }
+    return res.status(200).send('Password changed!');
   }
 
-  static checkIfUnencryptedPasswordIsValid(unencryptedPassword: string, encryptedPassword: string) {
+  static checkIfUnencryptedPasswordIsValid(unencryptedPassword: string, encryptedPassword: string): boolean {
     return bcrypt.compareSync(unencryptedPassword, encryptedPassword);
   }
 }

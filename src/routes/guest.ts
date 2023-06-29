@@ -1,6 +1,6 @@
 import { GuestController } from "../controllers/GuestController";
 import { Router } from "express";
-import { checkJwt } from "./../middlewares/checkJwt";
+import { checkJwt } from "../middlewares/auth/checkJwt";
 
 const router = Router();
 
