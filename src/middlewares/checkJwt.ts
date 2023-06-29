@@ -12,9 +12,7 @@ export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
 
   try {
     jwtPayLoad = <any>jwt.verify(token, process.env.JWT_SECRET ?? '');
-    console.log('🚀 ~ file: checkJwt.ts:15 ~ checkJwt ~ jwtPayLoad:', jwtPayLoad);
-    res.locals.jwtPayLoad = jwtPayLoad;
-  } catch (error: any) {
+  } catch (error) {
     return res.status(401).send();
   }
 
@@ -23,7 +21,8 @@ export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
   const newToken = jwt.sign({ id }, process.env.JWT_SECRET ?? '', {
     expiresIn: '1h',
   });
-
+  
+  res.locals.jwtPayLoad = jwtPayLoad;
   res.setHeader('Authorization', 'Bearer ' + newToken);
 
   next();

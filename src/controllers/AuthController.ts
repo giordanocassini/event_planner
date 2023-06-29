@@ -4,7 +4,7 @@ import { userRepository } from './../repositories/userRepository';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { Request, Response } from 'express';
-import UserRequest from '../interfaces/UserRequest';
+import UserRequest from '../interfaces/express/UserRequest';
 
 export class AuthController {
   static async auth(req: UserRequest, res: Response) {
@@ -25,12 +25,10 @@ export class AuthController {
 
   //stop refactor here
 
-  static async changePassword (req: Request, res: Response) {
+  static async changePassword(req: Request, res: Response) {
+    let jwtPayLoad = res.locals.jwtPayLoad;
 
-    let payload = <any>res.locals.jwtPayLoad;
-    console.log("🚀 ~ file: AuthController.ts:33 ~ AuthController ~ changePassword= ~ payload:", payload)
-
-    const { id }: any = payload;
+    const { id } = jwtPayLoad;
 
     let { oldPassword, newPassword } = req.body;
 
@@ -42,11 +40,11 @@ export class AuthController {
     try {
       user = await userRepository.findOneOrFail({ where: { id } });
     } catch (error) {
-      return res.status(401).send('Old password not match');
+      return res.status(401).send('User not found');
     }
 
     if (!AuthController.checkIfUnencryptedPasswordIsValid(oldPassword, user.password)) {
-      return res.status(401).send('Old password not match');
+      return res.status(401).send('Old password do not match');
     }
 
     const errors = await validate(user);
@@ -60,9 +58,9 @@ export class AuthController {
     userRepository.save(user);
 
     return res.status(204).send('Password changed!');
-  };
+  }
 
-  static checkIfUnencryptedPasswordIsValid(unencryptedPassword: string, encryptedPassword: string){
+  static checkIfUnencryptedPasswordIsValid(unencryptedPassword: string, encryptedPassword: string) {
     return bcrypt.compareSync(unencryptedPassword, encryptedPassword);
-}
+  }
 }
