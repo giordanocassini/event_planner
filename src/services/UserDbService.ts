@@ -19,10 +19,10 @@ export default class UserDbService implements IDbService<User> {
     let user: User;
 
     try {
-      user = await userRepository.findOneOrFail({ where: { id: Number(id) } }); // check behavior
+      user = await userRepository.findOneOrFail({ where: { id } }); // check behavior
       return user;
     } catch (error) {
-      if (error instanceof EntityNotFoundError) throw new Error('User not found'); // check behavior
+      if (error instanceof EntityNotFoundError) throw new Error(error.message); // check behavior
       throw new Error('undefined error'); // check error
     }
   }
@@ -34,7 +34,8 @@ export default class UserDbService implements IDbService<User> {
       user = await userRepository.findOneOrFail({ where: { email } });
       return user;
     } catch (error) {
-      throw new Error('undefined error');
+      if (error instanceof EntityNotFoundError) throw new Error(error.message); // check behavior
+      throw new Error('undefined error'); // check error
     }
   }
 
@@ -57,5 +58,14 @@ export default class UserDbService implements IDbService<User> {
       throw new Error('undefined error');
     }
     return data;
+  }
+
+  async checkIfUserAlreadyExist(email: string): Promise<boolean> {
+    try {
+      await this.findByEmail(email);
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 }
