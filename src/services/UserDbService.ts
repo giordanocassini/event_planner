@@ -4,12 +4,11 @@ import IDbService from '../interfaces/services/IDbService';
 import { QueryFailedError, EntityNotFoundError } from 'typeorm';
 
 export default class UserDbService implements IDbService<User> {
-
   private static instance: UserDbService;
-  
-  private constructor(){};
 
-  public static getInstance(): UserDbService {
+  private constructor() {}
+
+  static getInstance(): UserDbService {
     if (!UserDbService.instance) {
       UserDbService.instance = new UserDbService();
     }
@@ -24,7 +23,7 @@ export default class UserDbService implements IDbService<User> {
       return user;
     } catch (error) {
       if (error instanceof EntityNotFoundError) throw new Error('User not found'); // check behavior
-      throw new Error('undefined error');
+      throw new Error('undefined error'); // check error
     }
   }
 
@@ -59,21 +58,4 @@ export default class UserDbService implements IDbService<User> {
     }
     return data;
   }
-
-  createUser(name: string, email: string, birth_date: Date, password: string): User {
-    try {
-      const user: User = userRepository.create({
-        name,
-        email,
-        birth_date,
-        password,
-      });
-
-      return user;
-    } catch (error) {
-      throw new Error('undefined error');
-    }
-  }
 }
-
-

@@ -25,11 +25,8 @@ export class AuthController {
     return res.json({ user: userLogin, token: token });
   }
 
-  //stop refactor here
-
   static async changePassword(req: UserRequest, res: Response) {
-
-    let { oldPassword, newPassword } = req.body;
+    const { oldPassword, newPassword } = req.body;
 
     if (!(oldPassword && newPassword)) {
       return res.status(400).send();
@@ -41,13 +38,13 @@ export class AuthController {
       return res.status(401).send('Old password do not match');
     }
 
+    const newPasswordHashed = bcrypt.hashSync(newPassword, 10);
+    user.password = newPasswordHashed;
+
     const errors = await validate(user);
     if (errors.length > 0) {
       return res.status(400).send(errors);
     }
-
-    newPassword = bcrypt.hashSync(newPassword, 10);
-    user.password = newPassword;
 
     try {
       userDbService.insert(user);

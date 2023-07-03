@@ -3,3 +3,4 @@ db_data
 __tests__
 Dockerfile
 docker-compose.yaml
+notas.txt
