@@ -40,12 +40,14 @@ export default class UserDbService implements IDbService<User> {
   }
 
   async deleteById(id: number): Promise<User> {
-    const user: User = await this.findById(id);
+    let user: User;
 
     try {
+      user = await this.findById(id);
       await userRepository.delete(id);
       return user;
     } catch (error) {
+      if (error instanceof Error) throw new Error(error.message);
       if (error instanceof QueryFailedError) throw new Error(error.message);
       throw new Error('undefined error');
     }
@@ -58,6 +60,19 @@ export default class UserDbService implements IDbService<User> {
       throw new Error('undefined error');
     }
     return data;
+  }
+
+  async listAll(): Promise<Array<User>>{
+    let users: Array<User> = [];
+    try {
+      users = await userRepository.find({
+        select: ['id', 'name', 'email', 'birth_date'],
+      });
+      return users;
+    } catch (error) {
+      if (error instanceof EntityNotFoundError) throw new Error(error.message);
+      throw new Error('undefined error');
+    }
   }
 
   async checkIfUserAlreadyExist(email: string): Promise<boolean> {

@@ -3,10 +3,9 @@ import { Response, Request } from 'express';
 import { User } from '../entities/User';
 import bcrypt from 'bcryptjs';
 import { validate } from 'class-validator';
-import { userRepository } from '../repositories/userRepository';
-import { QueryFailedError, EntityNotFoundError } from 'typeorm';
 import UserFactory from '../factories/UserFactory';
 import UserDbService from '../services/UserDbService';
+import UserRequest from '../interfaces/express/UserRequest';
 
 const userFactory: UserFactory = UserFactory.getInstance();
 const userDbService: UserDbService = UserDbService.getInstance();
@@ -33,19 +32,20 @@ export class UserController {
     if (errors.length > 0) {
       return res.status(400).send(errors);
     }
-    
+
     try {
       await userDbService.insert(user);
     } catch (error) {
       return res.status(500).json(error);
     }
 
-    return res.status(201).json(user);
+    const { password: _, ...returnableUser } = user; // this removes password from user object creating returnableUser without it
+    return res.status(201).send(returnableUser);
   }
 
   static async deleteUser(req: Request, res: Response) {
     const id: number = Number(req.params.id);
-    
+
     let user: User;
 
     try {
@@ -55,46 +55,31 @@ export class UserController {
       return res.status(500).json(error);
     }
 
-    return res.status(200).send(user);
+    const { password: _, ...returnableUser } = user;
+    return res.status(201).send(returnableUser);
   }
 
-  static async editUser(req: Request, res: Response) {
-    const id = req.params.id;
+  static async editUser(req: UserRequest, res: Response) {
+    const user: User = req.user;
 
     const { name, email, birth_date } = req.body;
-    let user: User;
-    try {
-      user = await userRepository.findOneOrFail({ where: { id: Number(id) } });
-    } catch (error) {
-      if (error instanceof EntityNotFoundError) return res.status(404).send('User not found');
-      return res.status(500).json(error);
-    }
-
-    let new_birth_date;
-    try {
-      let splitDate = birth_date.split('/');
-      splitDate.reverse().join('/');
-      new_birth_date = new Date(splitDate);
-    } catch (error) {
-      return res.status(400).send('Invalid Date Format');
-    }
 
     if (name) {
       user.name = name;
     }
     if (email) {
+      if (await userDbService.checkIfUserAlreadyExist(email)) return res.status(409).send('Email already in use');
       user.email = email;
-      try {
-        const userWithSameEmail = await userRepository.findOne({
-          where: { email: user.email },
-        });
-        if (userWithSameEmail) return res.status(409).send('Email already in use');
-      } catch (error) {
-        return res.status(500).json(error);
-      }
     }
     if (birth_date) {
-      user.birth_date = new_birth_date;
+      let birthDateObject: Date;
+      try {
+        birthDateObject = formatDate(birth_date);
+      } catch (error) {
+        if (error instanceof Error) return res.status(400).send(error.message);
+        return res.status(500).send(error);
+      }
+      user.birth_date = birthDateObject;
     }
 
     const errors = await validate(user);
@@ -103,40 +88,38 @@ export class UserController {
     }
 
     try {
-      await userRepository.save(user);
+      await userDbService.insert(user);
     } catch (error) {
       return res.status(500).json(error);
     }
-
-    return res.status(204).send();
+    const { password: _, ...returnableUser } = user;
+    return res.status(201).send(returnableUser);
   }
 
   static async listAll(req: Request, res: Response) {
     let users: Array<User> = [];
     try {
-      users = await userRepository.find({
-        select: ['id', 'name', 'email', 'birth_date'],
-      });
+      users = await userDbService.listAll();
     } catch (error) {
-      if (error instanceof EntityNotFoundError) return res.status(404).send('No users to show');
+      if (error instanceof Error) return res.status(404).send(error.message);
       return res.status(500).json(error);
     }
     return res.status(200).send(users);
   }
 
   static async getOneById(req: Request, res: Response) {
-    const id = req.params.id;
+    const id: number = Number(req.params.id);
+
     let user: User;
+
     try {
-      user = await userRepository.findOneOrFail({
-        where: { id: Number(id) },
-        select: ['id', 'name', 'email', 'birth_date'],
-      });
+      user = await userDbService.findById(id);
     } catch (error) {
-      if (error instanceof EntityNotFoundError) return res.status(404).send('User not found');
+      if (error instanceof Error) return res.status(404).send(error.message);
       return res.status(500).json(error);
     }
 
-    return res.status(200).send(user);
+    const { password: _, ...returnableUser } = user;
+    return res.status(201).send(returnableUser);
   }
 }

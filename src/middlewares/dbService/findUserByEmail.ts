@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { User } from '../../entities/User';
-import UserRequest from '../../interfaces/express/UserRequest'
-import UserDbService from '../../services/UserDbService'
+import UserRequest from '../../interfaces/express/UserRequest';
+import UserDbService from '../../services/UserDbService';
 
 const userDbService: UserDbService = UserDbService.getInstance();
 
@@ -13,10 +13,8 @@ export const findUserByEmail = async (req: UserRequest, res: Response, next: Nex
   try {
     user = await userDbService.findByEmail(email);
   } catch (error) {
-    return res.status(404).send({
-      error,
-      message: "user not found"
-    });
+    if (error instanceof Error) return res.status(400).send(error.message);
+    return res.status(500).send(error);
   }
 
   req.user = user;

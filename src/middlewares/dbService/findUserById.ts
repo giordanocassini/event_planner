@@ -5,6 +5,8 @@ import UserDbService from '../../services/UserDbService';
 
 const userDbService: UserDbService = UserDbService.getInstance();
 
+// for now, this middleware only gets id info from jwtPayload and not from req.params.
+
 export const findUserById = async (req: UserRequest, res: Response, next: NextFunction) => {
   let jwtPayLoad = res.locals.jwtPayLoad;
 
@@ -15,10 +17,8 @@ export const findUserById = async (req: UserRequest, res: Response, next: NextFu
   try {
     user = await userDbService.findById(id);
   } catch (error) {
-    return res.status(404).send({
-      error,
-      message: 'user not found',
-    });
+    if (error instanceof Error) return res.status(400).send(error.message);
+    return res.status(500).send(error);
   }
 
   req.user = user;
