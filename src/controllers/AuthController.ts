@@ -20,9 +20,9 @@ export class AuthController {
 
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET ?? '', { expiresIn: '8h' }); //Alterar o jwt secret
 
-    const { password: _, ...userLogin } = user; // this removes password from user object creating userLogin without it
+    const { password: _, ...returnableUser } = user; // this removes password from user object creating returnableUser without it
 
-    return res.json({ user: userLogin, token: token });
+    return res.json({ user: returnableUser, token: token });
   }
 
   static async changePassword(req: UserRequest, res: Response) {
@@ -51,6 +51,7 @@ export class AuthController {
     } catch (error) {
       res.status(500).send('server failded');
     }
+
     return res.status(200).send('Password changed!');
   }
 
