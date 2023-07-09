@@ -5,4 +5,5 @@ import { User } from '../../entities/User';
 // anyway it expoxes better what i1m doing
 export default interface UserRequest extends Request {
   user: User;
+  users: User[];
 }
