@@ -32,9 +32,13 @@ export class EventController {
       if (error instanceof Error) return res.status(400).send(error.message);
       return res.status(500).send(error);
     }
+    const newEvent = eventFactory.createInstance(place, name, event_date, managers, event_budget, guests_number);
+    const errors = await validate(newEvent);
+    if (errors.length > 0) {
+      return res.status(400).send(errors);
+    }
 
     try {
-      const newEvent = eventFactory.createInstance(place, name, date, managers, event_budget, guests_number);
       await eventDbService.insert(newEvent);
       return res.status(201).json(newEvent);
     } catch (error) {
