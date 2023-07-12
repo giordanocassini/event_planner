@@ -1,4 +1,4 @@
-import { findUserById } from './../middlewares/dbService/findUserById';
+import { getUserFromJwt } from '../middlewares/dbService/getUserFromJwt';
 import { findUserByEmail } from '../middlewares/dbService/findUserByEmail';
 import { checkPassword } from '../middlewares/validations/checkPassword';
 import { checkJwt } from '../middlewares/auth/checkJwt';
@@ -8,6 +8,6 @@ const router = Router();
 
 router.post('/login', [checkPassword], [findUserByEmail], AuthController.auth);
 
-router.put('/change-password', [checkJwt], [findUserById], AuthController.changePassword);
+router.put('/change-password', [checkJwt], [getUserFromJwt], AuthController.changePassword);
 
 export default router;

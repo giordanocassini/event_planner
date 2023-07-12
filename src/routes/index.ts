@@ -10,7 +10,7 @@ import list from "./list"
 const routes = Router();
 
 routes.get("/", (req: Request, res: Response) => {
-  return res.json("Api running");
+  return res.send("Api running");
 });
 
 router.use(user);
