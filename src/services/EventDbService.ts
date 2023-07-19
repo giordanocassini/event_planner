@@ -19,11 +19,33 @@ export default class EventDbService implements IDbService<Event> {
     let event: Event;
 
     try {
-      event = await eventRepository.findOneOrFail({ where: { id } }); // check behavior
+      event = await eventRepository.findOneOrFail({ where: { id, deleted: false },  }); // check behavior
       return event;
     } catch (error) {
       if (error instanceof EntityNotFoundError) throw new Error(error.message); // check behavior
       throw new Error('undefined error'); // check error
+    }
+  }
+
+  async listAll(): Promise<Array<Event>> {
+    let allEvents: Array<Event> = [];
+    try {
+      allEvents = await eventRepository.find({ where: { deleted: false } });
+      return allEvents;
+    } catch (error) {
+      throw new Error('undefined error');
+    }
+  }
+  async listAllUserEvents(userId: number): Promise<Array<Event>> {
+    let allUserEvents: Array<Event>;
+
+    try {
+      allUserEvents = await eventRepository.find({
+        where: { users: { id: userId }, deleted: false },
+      });
+      return allUserEvents;
+    } catch (error) {
+      throw new Error('undefined error');
     }
   }
 

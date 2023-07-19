@@ -22,7 +22,7 @@ export class AuthController {
 
     const { password: _, ...returnableUser } = user; // this removes password from user object creating returnableUser without it
 
-    return res.json({ user: returnableUser, token: token });
+    return res.status(200).json({ user: returnableUser, token: token });
   }
 
   static async changePassword(req: UserRequest, res: Response) {

@@ -53,7 +53,7 @@ export class Event {
   users: User[]
 
   @OneToMany(() => Quotation, quotation => quotation.event_id)
-  quotation: Quotation[]
+  quotations: Quotation[]
 
   @OneToMany(() => Guest, (guest) => guest.event)
   guest: Guest[]

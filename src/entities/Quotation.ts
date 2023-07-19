@@ -34,7 +34,7 @@ export class Quotation{
     @UpdateDateColumn()
     updateDateColumn: Date;
 
-    @ManyToOne(()=> Event, (event) => event.quotation)
+    @ManyToOne(()=> Event, (event) => event.quotations)
     @JoinColumn({name: 'event_id'})
     event_id: Event
    

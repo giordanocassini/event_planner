@@ -47,115 +47,93 @@ export class EventController {
     }
   }
 
-  static async putAddUserinEvent(req: Request, res: Response) {
-    let { email } = req.body;
-    let { id } = req.params;
+  static async addUser(req: Request, res: Response) {
+    const id = Number(req.params.id);
+    const user = req.user;
 
-    let user = await userRepository.findOneBy({ email: email });
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    console.log(user);
-    let event = await eventRepository.findOne({
-      where: { id: +id },
-      relations: {
-        users: true,
-      },
-    });
-    if (!event) {
-      return res.status(404).json({ message: 'Event not found' });
-    }
-    if (event.deleted == true) return res.status(404).json({ message: 'Event not found' });
-    if (event.users.includes(user)) return res.status(409).json({ message: 'User already invited' });
-
-    if (user) {
-      event.users.push(user);
-    }
-
+    let event: Event;
     try {
-      await eventRepository.save(event);
+      event = await eventDbService.findById(id);
     } catch (error) {
+      if (error instanceof Error) return res.status(404).send(error.message);
       return res.status(500).json(error);
     }
-    return res.status(201).send('User added');
+
+    if (event.users.includes(user)) return res.status(409).send('User already invited');
+
+    event.users.push(user);
+
+    try {
+      await eventDbService.insert(event);
+    } catch (error) {
+      if (error instanceof Error) return res.status(500).send(error.message);
+      return res.status(500).send(error);
+    }
+
+    return res.status(201).send('User added to event');
   }
 
   static async getAllEvents(req: Request, res: Response) {
     let allEvents: Array<Event> = [];
     try {
-      allEvents = await eventRepository.find({ where: { deleted: false } });
+      allEvents = await eventDbService.listAll();
+      return res.status(200).send(allEvents);
     } catch (error) {
-      console.log(error);
-      return res.status(500).send('Internal Server Error');
+      if (error instanceof Error) return res.status(500).send(error.message);
+      return res.status(500).send(error);
     }
-
-    return res.status(200).send(allEvents);
   }
 
-  static async getEventbyIdUser(req: Request, res: Response) {
-    const { idUser } = req.params;
+  static async getEventsByUser(req: Request, res: Response) {
+    const userId = Number(req.params.userId);
     let user: User;
-
     try {
-      user = await userRepository.findOneOrFail({
-        where: { id: Number(idUser) },
-      });
+      user = await userDbService.findById(userId);
     } catch (error) {
-      if (error instanceof EntityNotFoundError) {
-        return res.status(404).send('User not found');
-      }
-      return res.status(500).json(error);
+      if (error instanceof Error) return res.status(404).send(error.message);
+      return res.status(500).send(error);
     }
 
-    let allEventsbyUser: Array<Event>;
+    let allEventsByUser: Array<Event>;
+
     try {
-      allEventsbyUser = await eventRepository.find({
-        where: { users: { id: Number(idUser) }, deleted: false },
-      });
+      allEventsByUser = await eventDbService.listAllUserEvents(userId);
+      return res.status(200).send(allEventsByUser);
     } catch (error) {
+      if (error instanceof Error) return res.status(404).send(error.message);
       return res.status(500).json(error);
     }
-
-    return res.send(allEventsbyUser);
   }
 
   static async editEvent(req: Request, res: Response) {
-    const id = req.params.id;
-
-    let { place, name, date, event_budget, guests_number } = req.body;
-
-    let new_date;
-    try {
-      let splitDate = date.split('/');
-      splitDate.reverse().join('/');
-      new_date = new Date(splitDate);
-    } catch (error) {
-      return res.status(400).send('Invalid Date Format');
-    }
+    const id = Number(req.params.id);
+    const { place, name, date, event_budget, guests_number } = req.body;
 
     let event: Event;
     try {
-      event = await eventRepository.findOneOrFail({
-        where: { id: Number(id), deleted: false },
-      });
+      event = await eventDbService.findById(id);
     } catch (error) {
-      if (error instanceof EntityNotFoundError) {
-        return res.status(404).send('User not found');
-      }
+      if (error instanceof Error) return res.status(404).send(error.message);
       return res.status(500).json(error);
     }
 
+    if (date) {
+      let dateObject: Date;
+      try {
+        dateObject = formatDate(date);
+        event.date = dateObject;
+      } catch (error) {
+        if (error instanceof Error) return res.status(404).send(error.message);
+        return res.status(500).json(error);
+      }
+    }
     if (place) {
       event.place = place;
     }
     if (name) {
       event.name = name;
     }
-    if (date) {
-      event.date = new_date;
-    }
     if (event_budget) {
-      console.log(event_budget);
       event.event_budget = event_budget;
     }
     if (guests_number) {
@@ -168,40 +146,34 @@ export class EventController {
     }
 
     try {
-      await eventRepository.save(event);
+      await eventDbService.insert(event);
+      return res.status(201).send(event);
     } catch (error) {
+      if (error instanceof Error) return res.status(404).send(error.message);
       return res.status(500).json(error);
     }
-
-    return res.status(204).send();
   }
 
   static async deleteEvent(req: Request, res: Response) {
-    const id = req.params.id;
+    const id = Number(req.params.id);
+
     let event: Event;
     try {
-      event = await eventRepository.findOneOrFail({
-        where: { id: Number(id), deleted: false },
-      });
+      event = await eventDbService.findById(id);
     } catch (error) {
-      if (error instanceof EntityNotFoundError) {
-        return res.status(404).send('User not found');
-      }
+      if (error instanceof Error) return res.status(404).send(error.message);
       return res.status(500).json(error);
     }
+
+    event.deleted = true;
 
     try {
-      event.deleted = true;
-      console.log(event);
-      await eventRepository.save(event);
+      await eventDbService.insert(event);
+      return res.status(201).send(event);
     } catch (error) {
-      if (error instanceof EntityNotFoundError) {
-        return res.status(400).json(error.message);
-      }
+      if (error instanceof Error) return res.status(404).send(error.message);
       return res.status(500).json(error);
     }
-
-    return res.status(204).send();
   }
 
   static async listAllExpected_Expense(req: Request, res: Response) {
@@ -262,50 +234,21 @@ export class EventController {
     }
   }
 
-  static async getEventbyIdUserandbyIdEvent(req: Request, res: Response) {
-    const token = <any>req.header('Authorization')?.replace('Bearer ', '');
-    if (!token) {
-      return res.status(401).send('Not logged.');
-    }
-
-    let payload;
+  static async getEventbyLoggedUserAndByEventId(req: Request, res: Response) {
+    const idEvent = Number(req.params.idEvent);
+    let user: User = req.user;
+    let eventByUser: Event | undefined;
 
     try {
-      payload = jwt.verify(token, process.env.JWT_SECRET ?? '');
-    } catch (error) {
-      if (error instanceof jwt.JsonWebTokenError) {
-        return res.status(401).end();
-      }
-      return res.status(400).end();
-    }
-
-    const { id }: any = payload;
-
-    const idEvent = req.params.idEvent;
-    let user: User;
-
-    try {
-      user = await userRepository.findOneOrFail({
-        where: { id: Number(id) },
+      const allEventsbyUser: Array<Event> = await eventDbService.listAllUserEvents(user.id);
+      eventByUser = allEventsbyUser.find((event) => {
+        event.id === idEvent;
       });
+      if (typeof eventByUser === 'undefined') throw new Error('Event not found');
+      return res.send(eventByUser);
     } catch (error) {
-      if (error instanceof EntityNotFoundError) {
-        return res.status(404).send('User not found');
-      }
+      if (error instanceof Error) return res.status(500).send(error.message);
       return res.status(500).json(error);
     }
-
-    let allEventsbyUser: Array<Event>;
-    let eventbyUser;
-    try {
-      allEventsbyUser = await eventRepository.find({
-        where: { id: Number(idEvent), users: { id: Number(id) }, deleted: false },
-      });
-      eventbyUser = allEventsbyUser[0];
-    } catch (error) {
-      return res.status(500).json(error);
-    }
-
-    return res.send(eventbyUser);
   }
 }
