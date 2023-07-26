@@ -1,4 +1,4 @@
-import { findUsersByEmail } from './../middlewares/dbService/findUsersByEmail';
+//import { findUsersByEmail } from './../middlewares/dbService/findUsersByEmail';
 import { checkJwt } from '../middlewares/auth/checkJwt';
 import { getUserFromJwt } from '../middlewares/dbService/getUserFromJwt';
 import { EventController } from './../controllers/EventController';
