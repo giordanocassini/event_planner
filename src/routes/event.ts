@@ -13,12 +13,13 @@ router.route('/event')
 
 router.route('/event/:id([0-9]+)')
 .put([checkJwt], EventController.editEvent)
-.delete([checkJwt], EventController.deleteEvent);
+.delete([checkJwt], EventController.deleteEvent)
+.get([checkJwt], [getUserFromJwt], EventController.getEventbyLoggedUserAndByEventId); //doesn't make sense logged user being a parameter on this
 
-router.get('/event/:userId([0-9]+)', [checkJwt], EventController.getEventsByUser);
-router.get('/event/getevent/:idEvent([0-9]+)', [checkJwt], [getUserFromJwt], EventController.getEventbyLoggedUserAndByEventId);
-router.get('/event/allExpectedExpense/:id([0-9]+)', [checkJwt], EventController.listAllExpected_Expense);
-router.get('/event/allActualExpense/:id([0-9]+)', [checkJwt], EventController.listAllExpense);
-router.put('/event/addUser/:id([0-9]+)', [checkJwt], [findUserByEmail], EventController.addUser);
+router.get('/event/allExpectedExpense/:eventId([0-9]+)', [checkJwt], EventController.listAllExpected_Expense);
+router.get('/event/allActualExpense/:eventId([0-9]+)', [checkJwt], EventController.listAllExpense);
+router.get('/event/byUser/:userId([0-9]+)', [checkJwt], EventController.getEventsByUser);
+router.put('/event/addUser/:eventId([0-9]+)', [checkJwt], [findUserByEmail], EventController.addUser);
+
 
 export default router;

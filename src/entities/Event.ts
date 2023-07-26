@@ -40,7 +40,7 @@ export class Event {
     nullable: false,
   })
   updated_at: Date;
-
+  
   @ManyToMany(() => User, (user) => user.events)
   users: User[];
 

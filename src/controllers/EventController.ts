@@ -66,7 +66,7 @@ export class EventController {
 
   // not documentend on swagger
   static async addUser(req: Request, res: Response) {
-    const id = Number(req.params.id);
+    const id = Number(req.params.eventId);
     const user = req.user; // came from body, not jwt
 
     let event: Event;
@@ -195,7 +195,7 @@ export class EventController {
   }
 
   static async listAllExpected_Expense(req: Request, res: Response) {
-    let eventId = Number(req.params.id);
+    let eventId = Number(req.params.eventId);
     let quotation: Quotation;
     try {
       quotation = await quotationDbService.listAllExpectedExpense(eventId);
@@ -220,7 +220,7 @@ export class EventController {
   }
 
   static async listAllExpense(req: Request, res: Response) {
-    const id = req.params.id;
+    const id = req.params.eventId;
 
     let quotation: any;
 
@@ -249,14 +249,14 @@ export class EventController {
   }
 
   static async getEventbyLoggedUserAndByEventId(req: Request, res: Response) {
-    const idEvent = Number(req.params.idEvent);
+    const eventId = Number(req.params.id);
     let user: User = req.user;
     let eventByUser: Event | undefined;
 
     try {
       const allEventsbyUser: Array<Event> = await eventDbService.listAllUserEvents(user.id);
       eventByUser = allEventsbyUser.find((event) => {
-        event.id === idEvent;
+        event.id === eventId;
       });
       if (typeof eventByUser === 'undefined') throw new Error('Event not found');
       return res.send(eventByUser);

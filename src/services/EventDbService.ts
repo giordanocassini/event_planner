@@ -19,7 +19,7 @@ export default class EventDbService implements IDbService<Event> {
     let event: Event;
 
     try {
-      event = await eventRepository.findOneOrFail({ where: { id, deleted: false },  }); // check behavior
+      event = await eventRepository.findOneOrFail({ where: { id, deleted: false }, relations: ['users']  }); // check behavior
       return event;
     } catch (error) {
       if (error instanceof EntityNotFoundError) throw new Error(error.message); // check behavior
@@ -30,7 +30,7 @@ export default class EventDbService implements IDbService<Event> {
   async listAll(): Promise<Array<Event>> {
     let allEvents: Array<Event> = [];
     try {
-      allEvents = await eventRepository.find({ where: { deleted: false } });
+      allEvents = await eventRepository.find({ where: { deleted: false }, relations: ['users'] });
       return allEvents;
     } catch (error) {
       throw new Error('undefined error');
