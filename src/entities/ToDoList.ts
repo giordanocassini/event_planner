@@ -1,29 +1,28 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, Unique, ManyToMany, ManyToOne, JoinColumn, JoinTable } from "typeorm"
-import { Length } from "class-validator"
-import { Event } from "./Event"
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, Unique, ManyToMany, ManyToOne, JoinColumn, JoinTable } from 'typeorm';
+import { Length } from 'class-validator';
+import { Event } from './Event';
 
-@Entity("todolist")
+@Entity('todolist')
 export class ToDoList {
-    @PrimaryGeneratedColumn()
-    id: number
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    @Length(1, 250)
-    content: string
+  @Column()
+  @Length(1, 250)
+  content: string;
 
-    @Column()
-    done: boolean
+  @Column()
+  done: boolean;
 
-    @Column()
-    @CreateDateColumn()
-    createdAt: Date
+  @Column()
+  @CreateDateColumn()
+  createdAt: Date;
 
-    @Column()
-    @UpdateDateColumn()
-    updatedAt: Date
+  @Column()
+  @UpdateDateColumn()
+  updatedAt: Date;
 
-    @ManyToOne(() => Event, event => event.guest)
-    @JoinColumn({name: 'event_id'})
-    event: Event
-
+  @ManyToOne(() => Event, (event) => event.guest)
+  @JoinColumn({ name: 'event_id' })
+  event: Event;
 }

@@ -1,19 +1,11 @@
 import { ToDoList } from './ToDoList';
 import { User } from './User';
 import { Quotation } from './Quotation';
-import { Guest } from "./Guest"
-import {
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-  OneToMany,
-  ManyToMany
-} from "typeorm";
-import { Length, IsDate } from "class-validator";
+import { Guest } from './Guest';
+import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToMany } from 'typeorm';
+import { Length, IsDate } from 'class-validator';
 
-@Entity("event")
+@Entity('event')
 export class Event {
   @PrimaryGeneratedColumn()
   id: number;
@@ -31,34 +23,33 @@ export class Event {
   date: Date;
 
   @Column()
-  guests_number : number;
+  guests_number: number;
 
   @Column()
-  event_budget : number;
+  event_budget: number;
 
   @Column()
   deleted: boolean;
 
   @CreateDateColumn({
-    nullable: false
+    nullable: false,
   })
   created_at: Date;
 
   @UpdateDateColumn({
-    nullable: false
+    nullable: false,
   })
   updated_at: Date;
 
-  @ManyToMany(() => User, user => user.events)
-  users: User[]
+  @ManyToMany(() => User, (user) => user.events)
+  users: User[];
 
-  @OneToMany(() => Quotation, quotation => quotation.event_id)
-  quotations: Quotation[]
+  @OneToMany(() => Quotation, (quotation) => quotation.event)
+  quotations: Quotation[];
 
   @OneToMany(() => Guest, (guest) => guest.event)
-  guest: Guest[]
+  guest: Guest[];
 
   @OneToMany(() => ToDoList, (todolist) => todolist.event)
-  todolist: ToDoList[]
-
+  todolist: ToDoList[];
 }

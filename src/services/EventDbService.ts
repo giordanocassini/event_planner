@@ -67,6 +67,8 @@ export default class EventDbService implements IDbService<Event> {
     try {
       await eventRepository.save(data);
     } catch (error) {
+      if (error instanceof Error) throw new Error(error.message);
+      if (error instanceof QueryFailedError) throw new Error(error.message);
       throw new Error('undefined error');
     }
     return data;

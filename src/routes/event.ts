@@ -9,7 +9,7 @@ const router = Router();
 
 router.route('/event')
 .get([checkJwt], EventController.getAllEvents)
-.post([checkJwt], [getUserFromJwt], [findUsersByEmail], EventController.createEventbyUser);
+.post([checkJwt], [getUserFromJwt], EventController.createEventbyUser);
 
 router.route('/event/:id([0-9]+)')
 .put([checkJwt], EventController.editEvent)

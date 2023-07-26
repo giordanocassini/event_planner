@@ -1,3 +1,4 @@
+import { findUsersByEmail } from './../helpers/findUsersByEmail';
 import { userRepository } from './../repositories/userRepository';
 import { eventRepository } from '../repositories/eventRepository';
 import { quotationRepository } from '../repositories/quotationRepository';
@@ -12,19 +13,34 @@ import { formatDate } from '../helpers/formatDate';
 import UserDbService from '../services/UserDbService';
 import EventDbService from '../services/EventDbService';
 import EventFactory from '../factories/EventFactory';
+import { Quotation } from '../entities/Quotation';
+import QuotationDbService from '../services/QuotationDbService';
 
 const userDbService: UserDbService = UserDbService.getInstance();
 const eventDbService: EventDbService = EventDbService.getInstance();
+const quotationDbService = QuotationDbService.getInstance();
 const eventFactory: EventFactory = EventFactory.getInstance();
 
 export class EventController {
   static async createEventbyUser(req: UserRequest, res: Response) {
-    let { place, name, date, event_budget, guests_number } = req.body;
+    let { place, name, date, event_budget, guests_number, managers } = req.body;
 
+    if (!Array.isArray(managers)) {
+      return res.status(404).send('Invalid type of parameters on request!');
+    }
+
+    let eventManagers: Array<User>;
+    try {
+      eventManagers = await findUsersByEmail(managers);
+    } catch (error) {
+      if (error instanceof Error) return res.status(400).send(error.message);
+      return res.status(400).send(error);
+    }
+    
     const loggedUser: User = req.user;
-    const managers: User[] = req.users;
-    managers.push(loggedUser);
-
+    
+    if(!eventManagers.includes(loggedUser)) eventManagers.push(loggedUser);
+    
     let event_date: Date;
     try {
       event_date = formatDate(date);
@@ -32,7 +48,8 @@ export class EventController {
       if (error instanceof Error) return res.status(400).send(error.message);
       return res.status(500).send(error);
     }
-    const newEvent = eventFactory.createInstance(place, name, event_date, managers, event_budget, guests_number);
+
+    const newEvent = eventFactory.createInstance(place, name, event_date, eventManagers, event_budget, guests_number);
     const errors = await validate(newEvent);
     if (errors.length > 0) {
       return res.status(400).send(errors);
@@ -47,9 +64,10 @@ export class EventController {
     }
   }
 
+  // not documentend on swagger
   static async addUser(req: Request, res: Response) {
     const id = Number(req.params.id);
-    const user = req.user;
+    const user = req.user; // came from body, not jwt
 
     let event: Event;
     try {
@@ -177,32 +195,28 @@ export class EventController {
   }
 
   static async listAllExpected_Expense(req: Request, res: Response) {
-    let id = req.params.id;
-
-    let quotation: any;
-
+    let eventId = Number(req.params.id);
+    let quotation: Quotation;
     try {
-      quotation = await quotationRepository
-        .createQueryBuilder('quotation')
-        .where('quotation.event_id = :event_id', { event_id: id })
-        .addSelect('SUM(quotation.expected_expense)', 'sum')
-        .groupBy('quotation.event_id')
-        .getRawOne();
+      quotation = await quotationDbService.listAllExpectedExpense(eventId);
     } catch (error) {
+      if (error instanceof Error) return res.status(404).send(error.message);
       return res.status(400).send(error);
     }
+    
+    console.log("🚀 ~ file: EventController.ts:203 ~ EventController ~ listAllExpected_Expense ~ quotation:", quotation)
+    
+    // try {
+    //   const { quotation_event_id, sum } = quotation;
 
-    try {
-      const { quotation_event_id, sum } = quotation;
-
-      let expected_sum_event = {
-        event_id: quotation_event_id,
-        expected_expense: sum,
-      };
-      return res.json(expected_sum_event);
-    } catch (error) {
-      return res.status(400).send(error);
-    }
+    //   const expected_sum_event = {
+    //     event_id: quotation_event_id,
+    //     expected_expense: sum,
+    //   };
+    //   return res.json(expected_sum_event);
+    // } catch (error) {
+    //   return res.status(400).send(error);
+    // }
   }
 
   static async listAllExpense(req: Request, res: Response) {
