@@ -13,6 +13,6 @@ router.route('/user')
 router.route('/user/:id([0-9]+)')
 .get([checkJwt], UserController.getOneById)
 .delete([checkJwt], UserController.deleteUser)
-.put([checkJwt], [getUserFromJwt], UserController.editUser); //don't see a business rule where a user can edit another, but for now i'll leave this endpoint on this route.
+.put([checkJwt], [getUserFromJwt], UserController.editUser); 
 
 export default router;

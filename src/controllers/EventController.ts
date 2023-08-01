@@ -36,11 +36,11 @@ export class EventController {
       if (error instanceof Error) return res.status(400).send(error.message);
       return res.status(400).send(error);
     }
-    
+
     const loggedUser: User = req.user;
-    
-    if(!eventManagers.includes(loggedUser)) eventManagers.push(loggedUser);
-    
+
+    if (!eventManagers.includes(loggedUser)) eventManagers.push(loggedUser);
+
     let event_date: Date;
     try {
       event_date = formatDate(date);
@@ -203,9 +203,9 @@ export class EventController {
       if (error instanceof Error) return res.status(404).send(error.message);
       return res.status(400).send(error);
     }
-    
-    console.log("🚀 ~ file: EventController.ts:203 ~ EventController ~ listAllExpected_Expense ~ quotation:", quotation)
-    
+
+    console.log('🚀 ~ file: EventController.ts:203 ~ EventController ~ listAllExpected_Expense ~ quotation:', quotation);
+
     // try {
     //   const { quotation_event_id, sum } = quotation;
 
@@ -255,13 +255,11 @@ export class EventController {
 
     try {
       const allEventsbyUser: Array<Event> = await eventDbService.listAllUserEvents(user.id);
-      eventByUser = allEventsbyUser.find((event) => {
-        event.id === eventId;
-      });
-      if (typeof eventByUser === 'undefined') throw new Error('Event not found');
+      eventByUser = allEventsbyUser.find((event) => event.id == eventId);
+      if (eventByUser == undefined) throw new Error('Event not found for this user');
       return res.send(eventByUser);
     } catch (error) {
-      if (error instanceof Error) return res.status(500).send(error.message);
+      if (error instanceof Error) return res.status(404).send(error.message);
       return res.status(500).json(error);
     }
   }
