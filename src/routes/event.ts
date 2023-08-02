@@ -14,7 +14,7 @@ router.route('/event')
 router.route('/event/:id([0-9]+)')
 .put([checkJwt], EventController.editEvent)
 .delete([checkJwt], EventController.deleteEvent)
-.get([checkJwt], [getUserFromJwt], EventController.getEventbyLoggedUserAndByEventId); //doesn't make sense logged user being a parameter on this
+.get([checkJwt], [getUserFromJwt], EventController.getEventByIdFromLoggedUser); //doesn't make sense logged user being a parameter on this
 
 router.get('/event/allExpectedExpense/:eventId([0-9]+)', [checkJwt], EventController.listAllExpected_Expense);
 router.get('/event/allActualExpense/:eventId([0-9]+)', [checkJwt], EventController.listAllExpense);

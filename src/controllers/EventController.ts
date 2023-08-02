@@ -66,12 +66,12 @@ export class EventController {
 
   // not documentend on swagger
   static async addUser(req: Request, res: Response) {
-    const id = Number(req.params.eventId);
+    const eventId = Number(req.params.eventId);
     const user = req.user; // came from body, not jwt
 
     let event: Event;
     try {
-      event = await eventDbService.findById(id);
+      event = await eventDbService.findById(eventId);
     } catch (error) {
       if (error instanceof Error) return res.status(404).send(error.message);
       return res.status(500).json(error);
@@ -124,12 +124,12 @@ export class EventController {
   }
 
   static async editEvent(req: Request, res: Response) {
-    const id = Number(req.params.id);
+    const eventId = Number(req.params.eventId);
     const { place, name, date, event_budget, guests_number } = req.body;
 
     let event: Event;
     try {
-      event = await eventDbService.findById(id);
+      event = await eventDbService.findById(eventId);
     } catch (error) {
       if (error instanceof Error) return res.status(404).send(error.message);
       return res.status(500).json(error);
@@ -173,11 +173,11 @@ export class EventController {
   }
 
   static async deleteEvent(req: Request, res: Response) {
-    const id = Number(req.params.id);
+    const eventId = Number(req.params.eventId);
 
     let event: Event;
     try {
-      event = await eventDbService.findById(id);
+      event = await eventDbService.findById(eventId);
     } catch (error) {
       if (error instanceof Error) return res.status(404).send(error.message);
       return res.status(500).json(error);
@@ -220,14 +220,14 @@ export class EventController {
   }
 
   static async listAllExpense(req: Request, res: Response) {
-    const id = req.params.eventId;
+    const eventId = req.params.eventId;
 
     let quotation: any;
 
     try {
       quotation = await quotationRepository
         .createQueryBuilder('quotation')
-        .where('quotation.event_id=:event_id', { event_id: id })
+        .where('quotation.event_id=:event_id', { event_id: eventId })
         .addSelect('SUM(quotation.actual_expense)', 'sum')
         .groupBy('quotation.event_id')
         .getRawOne();
@@ -248,14 +248,14 @@ export class EventController {
     }
   }
 
-  static async getEventbyLoggedUserAndByEventId(req: Request, res: Response) {
-    const eventId = Number(req.params.id);
+  static async getEventByIdFromLoggedUser(req: Request, res: Response) {
+    const eventId = Number(req.params.eventId);
     let user: User = req.user;
     let eventByUser: Event | undefined;
 
     try {
       const allEventsbyUser: Array<Event> = await eventDbService.listAllUserEvents(user.id);
-      eventByUser = allEventsbyUser.find((event) => event.id == eventId);
+      eventByUser = allEventsbyUser.find(event => event.id == eventId);
       if (eventByUser == undefined) throw new Error('Event not found for this user');
       return res.send(eventByUser);
     } catch (error) {

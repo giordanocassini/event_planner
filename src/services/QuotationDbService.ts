@@ -48,9 +48,8 @@ export default class QuotationDbService implements IDbService<Quotation> {
         .addSelect('SUM(quotation.expected_expense)', 'sum')
         .groupBy('quotation.event_id')
         .getRawOne();
-      if (typeof quotation === 'undefined') throw new Error('Query failed');
+      if (quotation == undefined) throw new Error('Query failed');
     } catch (error) {
-      if (error instanceof QueryFailedError) throw new Error(error.message);
       if (error instanceof Error) throw new Error(error.message);
       throw new Error('undefined error');
     }
