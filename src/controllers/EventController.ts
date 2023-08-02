@@ -8,7 +8,7 @@ import { Response, Request } from 'express';
 import { validate } from 'class-validator';
 import { EntityNotFoundError } from 'typeorm';
 import jwt from 'jsonwebtoken';
-import UserRequest from '../interfaces/express/UserRequest';
+import EventRequest from '../interfaces/express/EventRequest';
 import { formatDate } from '../helpers/formatDate';
 import UserDbService from '../services/UserDbService';
 import EventDbService from '../services/EventDbService';
@@ -22,7 +22,7 @@ const quotationDbService = QuotationDbService.getInstance();
 const eventFactory: EventFactory = EventFactory.getInstance();
 
 export class EventController {
-  static async createEventbyUser(req: UserRequest, res: Response) {
+  static async createEventbyUser(req: EventRequest, res: Response) {
     let { place, name, date, event_budget, guests_number, managers } = req.body;
 
     if (!Array.isArray(managers)) {
@@ -65,17 +65,9 @@ export class EventController {
   }
 
   // not documentend on swagger
-  static async addUser(req: Request, res: Response) {
-    const eventId = Number(req.params.eventId);
-    const user = req.user; // came from body, not jwt
-
-    let event: Event;
-    try {
-      event = await eventDbService.findById(eventId);
-    } catch (error) {
-      if (error instanceof Error) return res.status(404).send(error.message);
-      return res.status(500).json(error);
-    }
+  static async addUser(req: EventRequest, res: Response) {
+    const user: User = req.user; // came from body, not jwt
+    const event: Event = req.myEvent;
 
     if (event.users.includes(user)) return res.status(409).send('User already invited');
 
@@ -123,17 +115,9 @@ export class EventController {
     }
   }
 
-  static async editEvent(req: Request, res: Response) {
-    const eventId = Number(req.params.eventId);
+  static async editEvent(req: EventRequest, res: Response) {
+    const event: Event = req.myEvent;
     const { place, name, date, event_budget, guests_number } = req.body;
-
-    let event: Event;
-    try {
-      event = await eventDbService.findById(eventId);
-    } catch (error) {
-      if (error instanceof Error) return res.status(404).send(error.message);
-      return res.status(500).json(error);
-    }
 
     if (date) {
       let dateObject: Date;
@@ -172,16 +156,8 @@ export class EventController {
     }
   }
 
-  static async deleteEvent(req: Request, res: Response) {
-    const eventId = Number(req.params.eventId);
-
-    let event: Event;
-    try {
-      event = await eventDbService.findById(eventId);
-    } catch (error) {
-      if (error instanceof Error) return res.status(404).send(error.message);
-      return res.status(500).json(error);
-    }
+  static async deleteEvent(req: EventRequest, res: Response) {
+    const event: Event = req.myEvent;
 
     event.deleted = true;
 
@@ -194,7 +170,7 @@ export class EventController {
     }
   }
 
-  static async listAllExpected_Expense(req: Request, res: Response) {
+  static async listAllExpected_Expense(req: EventRequest, res: Response) {
     let eventId = Number(req.params.eventId);
     let quotation: Quotation;
     try {
@@ -219,8 +195,8 @@ export class EventController {
     // }
   }
 
-  static async listAllExpense(req: Request, res: Response) {
-    const eventId = req.params.eventId;
+  static async listAllExpense(req: EventRequest, res: Response) {
+    const eventId = Number(req.params.eventId);
 
     let quotation: any;
 
@@ -248,7 +224,7 @@ export class EventController {
     }
   }
 
-  static async getEventByIdFromLoggedUser(req: Request, res: Response) {
+  static async getEventByIdFromLoggedUser(req: EventRequest, res: Response) {
     const eventId = Number(req.params.eventId);
     let user: User = req.user;
     let eventByUser: Event | undefined;
