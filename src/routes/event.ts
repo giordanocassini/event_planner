@@ -1,5 +1,5 @@
 import { findEventById } from './../middlewares/dbService/findEventById';
-//import { findUsersByEmail } from './../middlewares/dbService/findUsersByEmail';
+import { findUsersByEmail } from './../middlewares/dbService/findUsersByEmail';
 import { checkJwt } from '../middlewares/auth/checkJwt';
 import { getUserFromJwt } from '../middlewares/dbService/getUserFromJwt';
 import { EventController } from './../controllers/EventController';
@@ -10,7 +10,7 @@ const router = Router();
 
 router.route('/event')
 .get([checkJwt], EventController.getAllEvents)
-.post([checkJwt], [getUserFromJwt], EventController.createEventbyUser);
+.post([checkJwt], [getUserFromJwt], [findUsersByEmail], EventController.createEventbyUser);
 
 router.route('/event/:eventId([0-9]+)')
 .put([checkJwt], [findEventById], EventController.editEvent)

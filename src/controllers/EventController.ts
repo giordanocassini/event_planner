@@ -1,13 +1,9 @@
-import { findUsersByEmail } from './../helpers/findUsersByEmail';
-import { userRepository } from './../repositories/userRepository';
-import { eventRepository } from '../repositories/eventRepository';
+//import { findUsersByEmail } from './../helpers/findUsersByEmail';
 import { quotationRepository } from '../repositories/quotationRepository';
 import { Event } from './../entities/Event';
 import { User } from '../entities/User';
 import { Response, Request } from 'express';
 import { validate } from 'class-validator';
-import { EntityNotFoundError } from 'typeorm';
-import jwt from 'jsonwebtoken';
 import EventRequest from '../interfaces/express/EventRequest';
 import { formatDate } from '../helpers/formatDate';
 import UserDbService from '../services/UserDbService';
@@ -15,6 +11,7 @@ import EventDbService from '../services/EventDbService';
 import EventFactory from '../factories/EventFactory';
 import { Quotation } from '../entities/Quotation';
 import QuotationDbService from '../services/QuotationDbService';
+import UserRequest from '../interfaces/express/UserRequest';
 
 const userDbService: UserDbService = UserDbService.getInstance();
 const eventDbService: EventDbService = EventDbService.getInstance();
@@ -22,21 +19,9 @@ const quotationDbService = QuotationDbService.getInstance();
 const eventFactory: EventFactory = EventFactory.getInstance();
 
 export class EventController {
-  static async createEventbyUser(req: EventRequest, res: Response) {
-    let { place, name, date, event_budget, guests_number, managers } = req.body;
-
-    if (!Array.isArray(managers)) {
-      return res.status(404).send('Invalid type of parameters on request!');
-    }
-
-    let eventManagers: Array<User>;
-    try {
-      eventManagers = await findUsersByEmail(managers);
-    } catch (error) {
-      if (error instanceof Error) return res.status(400).send(error.message);
-      return res.status(400).send(error);
-    }
-
+  static async createEventbyUser(req: UserRequest, res: Response) {
+    let { place, name, date, event_budget, guests_number } = req.body;
+    const eventManagers: Array<User> = req.users;
     const loggedUser: User = req.user;
 
     if (!eventManagers.includes(loggedUser)) eventManagers.push(loggedUser);
@@ -49,7 +34,7 @@ export class EventController {
       return res.status(500).send(error);
     }
 
-    const newEvent = eventFactory.createInstance(place, name, event_date, eventManagers, event_budget, guests_number);
+    const newEvent: Event = eventFactory.createInstance(place, name, event_date, eventManagers, event_budget, guests_number);
     const errors = await validate(newEvent);
     if (errors.length > 0) {
       return res.status(400).send(errors);
