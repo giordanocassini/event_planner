@@ -33,7 +33,7 @@ export default class EventFactory implements IFactory<Event> {
 
       return event;
     } catch (error) {
-      throw new Error('undefined error');
+      throw new Error('error creating Event instance');
     }
   }
 }
