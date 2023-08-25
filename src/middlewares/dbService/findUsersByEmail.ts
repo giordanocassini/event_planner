@@ -5,8 +5,6 @@ import UserDbService from '../../services/UserDbService';
 
 const userDbService: UserDbService = UserDbService.getInstance();
 
-// this was turned into a helper
-
 export const findUsersByEmail = async (req: UserRequest, res: Response, next: NextFunction) => {
   const { managers } = req.body;
 

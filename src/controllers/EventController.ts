@@ -114,18 +114,10 @@ export class EventController {
         return res.status(500).json(error);
       }
     }
-    if (place) {
-      event.place = place;
-    }
-    if (name) {
-      event.name = name;
-    }
-    if (event_budget) {
-      event.event_budget = event_budget;
-    }
-    if (guests_number) {
-      event.guests_number = guests_number;
-    }
+    if (place) event.place = place;
+    if (name) event.name = name;
+    if (event_budget) event.event_budget = event_budget;
+    if (guests_number) event.guests_number = guests_number;
 
     const errors = await validate(event);
     if (errors.length > 0) {
@@ -216,7 +208,7 @@ export class EventController {
 
     try {
       const allEventsbyUser: Array<Event> = await eventDbService.listAllUserEvents(user.id);
-      eventByUser = allEventsbyUser.find(event => event.id == eventId);
+      eventByUser = allEventsbyUser.find((event) => event.id == eventId);
       if (eventByUser == undefined) throw new Error('Event not found for this user');
       return res.send(eventByUser);
     } catch (error) {
@@ -224,4 +216,6 @@ export class EventController {
       return res.status(500).json(error);
     }
   }
+
+  //static async insertEventOnDb () {}
 }
