@@ -28,7 +28,7 @@ export class Guest {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => Event, (event) => event.guest)
+  @ManyToOne(() => Event, (event) => event.guests)
   @JoinColumn({ name: 'event_id' })
   event: Event;
 }

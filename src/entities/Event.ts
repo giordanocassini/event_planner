@@ -48,7 +48,7 @@ export class Event {
   quotations: Quotation[];
 
   @OneToMany(() => Guest, (guest) => guest.event)
-  guest: Guest[];
+  guests: Guest[];
 
   @OneToMany(() => ToDoList, (todolist) => todolist.event)
   todolist: ToDoList[];
