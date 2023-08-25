@@ -25,10 +25,7 @@ export default class EventFactory implements IFactory<Event> {
         users,
         event_budget,
         guests_number,
-        deleted: false,
-        quotations: [],
-        todolist: [],
-        guests: []
+        deleted: false
       });
 
       return event;

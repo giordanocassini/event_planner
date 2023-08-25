@@ -19,7 +19,7 @@ export default class EventDbService implements IDbService<Event> {
     let event: Event;
 
     try {
-      event = await eventRepository.findOneOrFail({ where: { id, deleted: false }, relations: ['users']  }); // check behavior
+      event = await eventRepository.findOneOrFail({ where: { id, deleted: false }, relations: ['users', 'quotations', 'todolist', 'guests']  }); // check behavior
       return event;
     } catch (error) {
       if (error instanceof EntityNotFoundError) throw new Error(error.message); // check behavior

@@ -4,9 +4,10 @@ import { Event } from '../../entities/Event';
 
 export const checkQuotations = (req: EventRequest, res: Response, next: NextFunction) => {
   const event: Event = req.myEvent;
+
   console.log(typeof event.quotations);
   
-  //if (!(event.quotations. > 0)) return res.status(404).send('No quotations yet for this event');
+  if (!(event.quotations.length > 0)) return res.status(404).send('No quotations yet for this event');
 
   next();
 };
