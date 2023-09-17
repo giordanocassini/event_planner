@@ -147,58 +147,16 @@ export class EventController {
     }
   }
 
-  static async listAllExpected_Expense(req: EventRequest, res: Response) {
-    let eventId = Number(req.params.eventId);
-    let quotation: Quotation;
-    try {
-      quotation = await quotationDbService.listAllExpectedExpense(eventId);
-    } catch (error) {
-      if (error instanceof Error) return res.status(404).send(error.message);
-      return res.status(400).send(error);
-    }
-
-    console.log('🚀 ~ file: EventController.ts:203 ~ EventController ~ listAllExpected_Expense ~ quotation:', quotation);
-
-    // try {
-    //   const { quotation_event_id, sum } = quotation;
-
-    //   const expected_sum_event = {
-    //     event_id: quotation_event_id,
-    //     expected_expense: sum,
-    //   };
-    //   return res.json(expected_sum_event);
-    // } catch (error) {
-    //   return res.status(400).send(error);
-    // }
+  static async listAllExpectedExpense(req: EventRequest, res: Response) {
+    const event: Event = req.myEvent;
+    const allExpectedExpense: number = event.quotations.reduce((accumulator, currentQuotation) => accumulator + currentQuotation.expected_expense, 0);
+    return res.status(200).json(allExpectedExpense);
   }
 
-  static async listAllExpense(req: EventRequest, res: Response) {
-    const eventId = Number(req.params.eventId);
-
-    let quotation: any;
-
-    try {
-      quotation = await quotationRepository
-        .createQueryBuilder('quotation')
-        .where('quotation.event_id=:event_id', { event_id: eventId })
-        .addSelect('SUM(quotation.actual_expense)', 'sum')
-        .groupBy('quotation.event_id')
-        .getRawOne();
-    } catch (error) {
-      return res.status(400).send(error);
-    }
-
-    try {
-      const { quotation_event_id, sum } = quotation;
-
-      let actual_sum_event = {
-        event_id: quotation_event_id,
-        actual_expense: sum,
-      };
-      return res.json(actual_sum_event);
-    } catch (error) {
-      return res.status(400).send(error);
-    }
+  static async listAllActualExpense(req: EventRequest, res: Response) {
+    const event: Event = req.myEvent;
+    const allActualExpense: number = event.quotations.reduce((accumulator, currentQuotation) => accumulator + currentQuotation.actual_expense, 0);
+    return res.status(200).json(allActualExpense);
   }
 
   static async getEventByIdFromLoggedUser(req: EventRequest, res: Response) {
