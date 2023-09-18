@@ -33,27 +33,8 @@ export default class QuotationDbService implements IDbService<Quotation> {
     try {
       await quotationRepository.save(data);
     } catch (error) {
-      throw new Error('undefined error');
+      throw new Error('unable to store data on database');
     }
     return data;
-  }
-
-  async listAllExpectedExpense(eventId: number): Promise<Quotation> {
-    let quotation: Quotation | undefined;
-
-    try {
-      quotation = await quotationRepository
-        .createQueryBuilder('quotation')
-        .where('quotation.event_id = :event_id', { event_id: eventId })
-        .addSelect('SUM(quotation.expected_expense)', 'sum')
-        .groupBy('quotation.event_id')
-        .getRawOne();
-      if (quotation == undefined) throw new Error('Query failed');
-    } catch (error) {
-      if (error instanceof Error) throw new Error(error.message);
-      throw new Error('undefined error');
-    }
-    
-    return quotation;
   }
 }

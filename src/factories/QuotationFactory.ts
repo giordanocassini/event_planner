@@ -25,11 +25,12 @@ export default class QuotationFactory implements IFactory<Quotation> {
         expected_expense,
         actual_expense,
         amount_already_paid,
+        deleted: false
       });
 
       return quotation;
     } catch (error) {
-      throw new Error('undefined error');
+      throw new Error('unable to create instance');
     }
   }
 }

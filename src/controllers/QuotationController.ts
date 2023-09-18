@@ -31,55 +31,37 @@ export class QuotationController {
   }
 
   static async getQuotationById(req: Request, res: Response) {
-    let id_quotation = req.params.id;
-
-    let quotation;
+    const quotationId = Number(req.params.id);
 
     try {
-      quotation = await quotationRepository.findOneOrFail({ where: { id: Number(id_quotation) } });
+      const quotation = await quotationDbService.findById(quotationId);
+      return res.status(200).send(quotation);
     } catch (error) {
-      return res.status(404).send('Quotation does not exist.');
+      if (error instanceof Error) return res.status(404).send(error.message);
+      return res.status(500).send(error);
     }
-
-    return res.status(200).send(quotation);
   }
 
   static async editQuotation(req: Request, res: Response) {
-    let id_quotation = req.params.id;
+    const quotationId = Number(req.params.id);
 
     const { description, contact, provider, expected_expense, actual_expense, amount_already_paid } = req.body;
 
     let quotation: Quotation;
 
     try {
-      quotation = await quotationRepository.findOneOrFail({ where: { id: Number(id_quotation) } });
+      quotation = await quotationDbService.findById(quotationId);
     } catch (error) {
-      return res.status(404).send('Id not Found!');
+      if (error instanceof Error) return res.status(404).send(error.message);
+      return res.status(500).send(error);
     }
 
-    if (description) {
-      quotation.description = description;
-    }
-
-    if (contact) {
-      quotation.contact = contact;
-    }
-
-    if (provider) {
-      quotation.provider = provider;
-    }
-
-    if (expected_expense) {
-      quotation.expected_expense = expected_expense;
-    }
-
-    if (actual_expense) {
-      quotation.actual_expense = actual_expense;
-    }
-
-    if (amount_already_paid) {
-      quotation.amount_already_paid = amount_already_paid;
-    }
+    if (description) quotation.description = description;
+    if (contact) quotation.contact = contact;
+    if (provider) quotation.provider = provider;
+    if (expected_expense) quotation.expected_expense = expected_expense;
+    if (actual_expense) quotation.actual_expense = actual_expense;
+    if (amount_already_paid) quotation.amount_already_paid = amount_already_paid;
 
     const validation = await validate(quotation);
     if (validation.length > 0) {
@@ -87,53 +69,31 @@ export class QuotationController {
     }
 
     try {
-      await quotationRepository.save(quotation);
+      await quotationDbService.insert(quotation);
+      return res.status(200).send('Quotation updated');
     } catch (error) {
-      return res.status(400).send(error);
+      if (error instanceof Error) return res.status(500).send(error.message);
+      return res.status(500).send(error);
     }
-
-    return res.status(200).send('Quotation updated');
   }
 
-  static async getAllQuotationByEventId(req: Request, res: Response) {
-    const event_id = req.params.id;
-    let quotation_id = req.params;
-
-    let event;
-    try {
-      event = await eventRepository.findOneOrFail({ where: { id: Number(event_id), deleted: false } });
-    } catch (error) {
-      return res.status(404).send('Event Not Found');
-    }
-
-    let quotation: any;
-
-    try {
-      quotation = await quotationRepository.find({
-        where: {
-          event: quotation_id, //??
-        },
-      });
-
-      return res.status(200).send(quotation);
-    } catch (error) {
-      return res.status(404).send(error);
-    }
+  static async getAllQuotationByEventId(req: EventRequest, res: Response) {
+    return res.status(201).send(req.myEvent.quotations); //not sure if this respects REST API's etiquete
   }
 
   static async deleteQuotation(req: Request, res: Response) {
-    let id_quotation = req.params.id;
+    const quotationId = Number(req.params.id);
 
     let quotation: Quotation;
 
     try {
-      quotation = await quotationRepository.findOneOrFail({ where: { id: Number(id_quotation) } });
+      quotation = await quotationDbService.findById(quotationId);
+      quotation.deleted = true;
+      await quotationDbService.insert(quotation);
+      return res.status(204).send();
     } catch (error) {
-      return res.status(404).send('Id not Found!');
+      if (error instanceof Error) return res.status(404).send(error.message);
+      return res.status(500).send(error);
     }
-
-    quotationRepository.delete(id_quotation);
-
-    return res.status(204).send();
   }
 }

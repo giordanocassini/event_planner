@@ -26,7 +26,7 @@ export default class UserFactory implements IFactory<User> {
 
       return user;
     } catch (error) {
-      throw new Error('undefined error');
+      throw new Error('unable to create instance');
     }
   }
 }

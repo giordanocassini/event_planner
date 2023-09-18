@@ -37,4 +37,7 @@ export class Quotation {
   @ManyToOne(() => Event, (event) => event.quotations)
   @JoinColumn({ name: 'event_id' })
   event: Event;
+
+  @Column()
+  deleted: boolean;
 }

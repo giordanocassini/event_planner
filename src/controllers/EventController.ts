@@ -1,5 +1,3 @@
-//import { findUsersByEmail } from './../helpers/findUsersByEmail';
-import { quotationRepository } from '../repositories/quotationRepository';
 import { Event } from './../entities/Event';
 import { User } from '../entities/User';
 import { Response, Request } from 'express';
@@ -9,13 +7,10 @@ import { formatDate } from '../helpers/formatDate';
 import UserDbService from '../services/UserDbService';
 import EventDbService from '../services/EventDbService';
 import EventFactory from '../factories/EventFactory';
-import { Quotation } from '../entities/Quotation';
-import QuotationDbService from '../services/QuotationDbService';
 import UserRequest from '../interfaces/express/UserRequest';
 
 const userDbService: UserDbService = UserDbService.getInstance();
 const eventDbService: EventDbService = EventDbService.getInstance();
-const quotationDbService = QuotationDbService.getInstance();
 const eventFactory: EventFactory = EventFactory.getInstance();
 
 export class EventController {

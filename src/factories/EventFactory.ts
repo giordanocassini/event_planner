@@ -30,7 +30,7 @@ export default class EventFactory implements IFactory<Event> {
 
       return event;
     } catch (error) {
-      throw new Error('error creating Event instance');
+      throw new Error('unable to create instance');
     }
   }
 }
