@@ -1,15 +1,11 @@
-import { eventRepository } from '../repositories/eventRepository';
-import { quotationRepository } from '../repositories/quotationRepository';
 import { Quotation } from './../entities/Quotation';
-import { Response, Request } from 'express';
-import { validate } from 'class-validator';
 import { Event } from '../entities/Event';
-import QuotationFactory from '../factories/QuotationFactory';
-import EventDbService from '../services/EventDbService';
 import QuotationDbService from '../services/QuotationDbService';
+import QuotationFactory from '../factories/QuotationFactory';
+import { Response, Request } from 'express';
 import EventRequest from '../interfaces/express/EventRequest';
+import { validate } from 'class-validator';
 
-const eventDbService = EventDbService.getInstance();
 const quotationDbService = QuotationDbService.getInstance();
 const quotationFactory = QuotationFactory.getInstance();
 
@@ -32,9 +28,11 @@ export class QuotationController {
 
   static async getQuotationById(req: Request, res: Response) {
     const quotationId = Number(req.params.id);
+    console.log("🚀 ~ file: QuotationController.ts:31 ~ QuotationController ~ getQuotationById ~ quotationId:", quotationId)
 
     try {
       const quotation = await quotationDbService.findById(quotationId);
+      console.log("🚀 ~ file: QuotationController.ts:34 ~ QuotationController ~ getQuotationById ~ quotationId:", quotationId)
       return res.status(200).send(quotation);
     } catch (error) {
       if (error instanceof Error) return res.status(404).send(error.message);
@@ -44,6 +42,7 @@ export class QuotationController {
 
   static async editQuotation(req: Request, res: Response) {
     const quotationId = Number(req.params.id);
+    console.log("🚀 ~ file: QuotationController.ts:44 ~ QuotationController ~ editQuotation ~ quotationId:", quotationId)
 
     const { description, contact, provider, expected_expense, actual_expense, amount_already_paid } = req.body;
 
@@ -51,6 +50,7 @@ export class QuotationController {
 
     try {
       quotation = await quotationDbService.findById(quotationId);
+      console.log("🚀 ~ file: QuotationController.ts:52 ~ QuotationController ~ editQuotation ~ quotationId:", quotationId)
     } catch (error) {
       if (error instanceof Error) return res.status(404).send(error.message);
       return res.status(500).send(error);
@@ -78,18 +78,15 @@ export class QuotationController {
   }
 
   static async getAllQuotationByEventId(req: EventRequest, res: Response) {
-    return res.status(201).send(req.myEvent.quotations); //not sure if this respects REST API's etiquete
+    return res.status(200).send(req.myEvent.quotations); //not sure if this respects REST API's etiquete
   }
 
   static async deleteQuotation(req: Request, res: Response) {
     const quotationId = Number(req.params.id);
-
-    let quotation: Quotation;
-
+    console.log("🚀 ~ file: QuotationController.ts:82 ~ QuotationController ~ deleteQuotation ~ quotationId:", quotationId)
+    
     try {
-      quotation = await quotationDbService.findById(quotationId);
-      quotation.deleted = true;
-      await quotationDbService.insert(quotation);
+      await quotationDbService.deleteById(quotationId);
       return res.status(204).send();
     } catch (error) {
       if (error instanceof Error) return res.status(404).send(error.message);

@@ -7,7 +7,7 @@ import { checkQuotations } from '../middlewares/validations/checkQuotations';
 const router = Router();
 
 router.route('/quotation/:eventId([0-9]+)')
-.post([checkJwt], [findEventById], QuotationController.createQuotation);
+.post([checkJwt], [findEventById], QuotationController.createQuotation)
 
 router.route('/quotation/:id([0-9]+)')
 .get([checkJwt], QuotationController.getQuotationById)
