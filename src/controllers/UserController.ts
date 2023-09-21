@@ -45,18 +45,13 @@ export class UserController {
 
   static async deleteUser(req: Request, res: Response) {
     const id: number = Number(req.params.id);
-
-    let user: User;
-
     try {
-      user = await userDbService.deleteById(id);
+      await userDbService.deleteById(id);
+      return res.status(204).send();
     } catch (error) {
       if (error instanceof Error) return res.status(400).json(error.message);
       return res.status(500).json(error);
     }
-
-    const { password: _, ...returnableUser } = user;
-    return res.status(201).send(returnableUser);
   }
 
   static async editUser(req: UserRequest, res: Response) {
@@ -64,13 +59,13 @@ export class UserController {
 
     const { name, email, birth_date } = req.body;
 
-    if (name) {
-      user.name = name;
-    }
+    if (name) user.name = name;
+
     if (email) {
       if (await userDbService.checkIfUserAlreadyExist(email)) return res.status(409).send('Email already in use');
       user.email = email;
     }
+
     if (birth_date) {
       let birthDateObject: Date;
       try {
@@ -89,11 +84,11 @@ export class UserController {
 
     try {
       await userDbService.insert(user);
+      const { password: _, ...returnableUser } = user;
+      return res.status(201).send(returnableUser);
     } catch (error) {
       return res.status(500).json(error);
     }
-    const { password: _, ...returnableUser } = user;
-    return res.status(201).send(returnableUser);
   }
 
   static async listAll(req: Request, res: Response) {

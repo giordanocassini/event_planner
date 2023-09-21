@@ -39,13 +39,12 @@ export default class UserDbService implements IDbService<User> {
     }
   }
 
-  async deleteById(id: number): Promise<User> {
+  async deleteById(id: number): Promise<void> {
     let user: User;
 
     try {
       user = await this.findById(id);
       await userRepository.delete(id);
-      return user;
     } catch (error) {
       if (error instanceof Error) throw new Error(error.message);
       if (error instanceof QueryFailedError) throw new Error(error.message);

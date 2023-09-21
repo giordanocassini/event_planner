@@ -29,7 +29,7 @@ export default class QuotationDbService implements IDbService<Quotation> {
     }
   }
 
-  async deleteById(id: number): Promise<Quotation> { 
+  async deleteById(id: number): Promise<void> { 
     try {
       const quotation: Quotation = await this.findById(id);
       quotation.deleted = true;      
@@ -37,7 +37,6 @@ export default class QuotationDbService implements IDbService<Quotation> {
       event.quotations = event.quotations.filter((q) => q.id !== quotation.id);
       this.insert(quotation);
       eventDbService.insert(event);
-      return quotation;
     } catch (error) {
       if (error instanceof Error) throw new Error(error.message);
       throw new Error('undefined error');

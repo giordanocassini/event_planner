@@ -49,13 +49,12 @@ export default class EventDbService implements IDbService<Event> {
     }
   }
 
-  async deleteById(id: number): Promise<Event> {
+  async deleteById(id: number): Promise<void> {
     let event: Event;
 
     try {
       event = await this.findById(id);
       await eventRepository.delete(id);
-      return event;
     } catch (error) {
       if (error instanceof Error) throw new Error(error.message);
       if (error instanceof QueryFailedError) throw new Error(error.message);
