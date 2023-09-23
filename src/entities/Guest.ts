@@ -18,17 +18,21 @@ export class Guest {
   invite: boolean;
 
   @Column()
-  isConfirmed: string;
-
+  isConfirmed: boolean;
+  
+  
   @Column()
   @CreateDateColumn()
   createdAt: Date;
-
+  
   @Column()
   @UpdateDateColumn()
   updatedAt: Date;
-
+  
   @ManyToOne(() => Event, (event) => event.guests)
   @JoinColumn({ name: 'event_id' })
   event: Event;
+  
+  @Column()
+  deleted: boolean;
 }

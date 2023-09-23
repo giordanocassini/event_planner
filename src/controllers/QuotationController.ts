@@ -28,11 +28,8 @@ export class QuotationController {
 
   static async getQuotationById(req: Request, res: Response) {
     const quotationId = Number(req.params.id);
-    console.log("🚀 ~ file: QuotationController.ts:31 ~ QuotationController ~ getQuotationById ~ quotationId:", quotationId)
-
     try {
       const quotation = await quotationDbService.findById(quotationId);
-      console.log("🚀 ~ file: QuotationController.ts:34 ~ QuotationController ~ getQuotationById ~ quotationId:", quotationId)
       return res.status(200).send(quotation);
     } catch (error) {
       if (error instanceof Error) return res.status(404).send(error.message);
@@ -42,15 +39,12 @@ export class QuotationController {
 
   static async editQuotation(req: Request, res: Response) {
     const quotationId = Number(req.params.id);
-    console.log("🚀 ~ file: QuotationController.ts:44 ~ QuotationController ~ editQuotation ~ quotationId:", quotationId)
-
     const { description, contact, provider, expected_expense, actual_expense, amount_already_paid } = req.body;
 
     let quotation: Quotation;
 
     try {
       quotation = await quotationDbService.findById(quotationId);
-      console.log("🚀 ~ file: QuotationController.ts:52 ~ QuotationController ~ editQuotation ~ quotationId:", quotationId)
     } catch (error) {
       if (error instanceof Error) return res.status(404).send(error.message);
       return res.status(500).send(error);
@@ -63,10 +57,8 @@ export class QuotationController {
     if (actual_expense) quotation.actual_expense = actual_expense;
     if (amount_already_paid) quotation.amount_already_paid = amount_already_paid;
 
-    const validation = await validate(quotation);
-    if (validation.length > 0) {
-      return res.status(400).send(validation);
-    }
+    const errors = await validate(quotation);
+    if (errors.length > 0) return res.status(400).send(errors);
 
     try {
       await quotationDbService.insert(quotation);
@@ -83,8 +75,7 @@ export class QuotationController {
 
   static async deleteQuotation(req: Request, res: Response) {
     const quotationId = Number(req.params.id);
-    console.log("🚀 ~ file: QuotationController.ts:82 ~ QuotationController ~ deleteQuotation ~ quotationId:", quotationId)
-    
+
     try {
       await quotationDbService.deleteById(quotationId);
       return res.status(204).send();

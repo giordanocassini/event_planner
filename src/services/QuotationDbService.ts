@@ -41,7 +41,6 @@ export default class QuotationDbService implements IDbService<Quotation> {
       if (error instanceof Error) throw new Error(error.message);
       throw new Error('undefined error');
     }
-
   }
 
   async insert(data: Quotation): Promise<Quotation> {
