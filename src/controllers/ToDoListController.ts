@@ -1,19 +1,24 @@
-import { listRepository } from '../repositories/listRepository';
+import { listRepository } from '../repositories/toDoListRepository';
 import { eventRepository } from '../repositories/eventRepository';
 import { Response, Request } from "express"
 import { validate } from "class-validator"
+import EventRequest from '../interfaces/express/EventRequest';
+import ToDoListDbService from '../services/ToDoListDbService';
+import ToDoListFactory from '../factories/ToDoListFactory';
 
-export class ListController {
-    static async createList (req: Request, res: Response) {
-        const { id, content, done, event_id } = req.body
-        const event = await eventRepository.findOneBy({id: event_id, deleted: false})
+const toDoListDbService: ToDoListDbService = ToDoListDbService.getInstance();
+const toDoListFactory: ToDoListFactory = ToDoListFactory.getInstance();
+
+export class ToDoListController {
+    static async createList (req: EventRequest, res: Response) {
+        const event = req.myEvent;
+        const { content, done } = req.body;
 
         if(!event) return res.status(404).json({error: "Event not found"})
 
-        const newList = listRepository.create({ content, done, event })
+        const newList = 
         
         const errors = await validate(newList)
-        
         if(errors.length > 0) return res.status(400).send(errors)
         
         await listRepository.save(newList)
