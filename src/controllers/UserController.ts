@@ -14,7 +14,7 @@ export class UserController {
   static async createUser(req: Request, res: Response) {
     const { name, email, password, birth_date } = req.body;
 
-    if (await userDbService.checkIfUserAlreadyExist(email)) return res.status(409).send('Email already in use');
+    if (await userDbService.findByEmail(email)) return res.status(409).send('Email already in use');
 
     let birthDateObject: Date;
     try {
@@ -62,7 +62,7 @@ export class UserController {
     if (name) user.name = name;
 
     if (email) {
-      if (await userDbService.checkIfUserAlreadyExist(email)) return res.status(409).send('Email already in use');
+      if (await userDbService.findByEmail(email)) return res.status(409).send('Email already in use');
       user.email = email;
     }
 

@@ -73,13 +73,4 @@ export default class UserDbService implements IDbService<User> {
       throw new Error('undefined error');
     }
   }
-
-  async checkIfUserAlreadyExist(email: string): Promise<boolean> {
-    try {
-      await this.findByEmail(email);
-      return true;
-    } catch (error) {
-      return false;
-    }
-  }
 }

@@ -36,6 +36,7 @@ export default class EventDbService implements IDbService<Event> {
       throw new Error('undefined error');
     }
   }
+  
   async listAllUserEvents(userId: number): Promise<Array<Event>> {
     let allUserEvents: Array<Event>;
 
