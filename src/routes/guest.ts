@@ -1,11 +1,12 @@
 import { GuestController } from "../controllers/GuestController";
 import { Router } from "express";
 import { checkJwt } from "../middlewares/auth/checkJwt";
+import { findEventById } from "../middlewares/dbService/findEventById";
 
 const router = Router();
 
-router.post("/guest/:event_id([0-9]+)", [checkJwt], GuestController.createGuest);
-router.get("/guest/event/:event_id([0-9]+)",[checkJwt],GuestController.getAllGuestByEventId);
+router.post("/guest/:eventId([0-9]+)", [checkJwt], [findEventById], GuestController.createGuest);
+router.get("/guest/event/:eventId([0-9]+)",[checkJwt], [findEventById], GuestController.getAllGuestsByEventId);
 
 router
   .route("/guest/:id([0-9]+)")

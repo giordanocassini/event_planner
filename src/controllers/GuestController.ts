@@ -59,30 +59,26 @@ export class GuestController {
     }
   }
 
-  static async getAllGuestByEventId(req: EventRequest, res: Response) {
+  static async getAllGuestsByEventId(req: EventRequest, res: Response) {
     const event: Event = req.myEvent;
-
-
-    const guestsEvent = await guestRepository.find({
-      where: {
-        event: {
-          id: Number(event_id),
-        },
-      },
-    });
-
-    return res.status(200).send(guestsEvent);
+    try {
+      const allGuestsByEvent: Guest[] = await guestDbService.findAllByEventId(event.id);
+      return res.status(200).send(allGuestsByEvent);
+    } catch (error) {
+      if (error instanceof Error) return res.status(500).send(error.message);
+      return res.status(500).send(error);
+    }
   }
 
   static async deleteGuest(req: Request, res: Response) {
-    const { id } = req.params;
+    const id = Number(req.params.id);
 
-    const guestExists = await guestRepository.countBy({ id: Number(id) });
-
-    if (guestExists < 1) return res.status(404).json({ error: 'Guest not found' });
-
-    await guestRepository.delete(id);
-
-    return res.sendStatus(204);
+    try {
+      await guestDbService.deleteById(id);
+      return res.sendStatus(204);
+    } catch (error) {
+      if (error instanceof Error) return res.status(404).send(error.message);
+      return res.status(500).send(error);
+    }
   }
 }
