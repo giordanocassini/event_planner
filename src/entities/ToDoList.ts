@@ -13,6 +13,9 @@ export class ToDoList {
 
   @Column()
   done: boolean;
+  
+  @Column()
+  deleted: boolean;
 
   @Column()
   @CreateDateColumn()

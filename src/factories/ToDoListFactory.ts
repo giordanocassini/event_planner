@@ -22,6 +22,7 @@ export default class ToDoListFactory implements IFactory<ToDoList> {
         content,
         done,
         event,
+        deleted: false
       });
 
       return toDoList;

@@ -51,5 +51,5 @@ export class Event {
   guests: Guest[];
 
   @OneToMany(() => ToDoList, (todolist) => todolist.event)
-  todolist: ToDoList[];
+  toDoLists: ToDoList[];
 }

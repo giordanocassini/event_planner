@@ -115,9 +115,7 @@ export class EventController {
     if (guests_number) event.guests_number = guests_number;
 
     const errors = await validate(event);
-    if (errors.length > 0) {
-      return res.status(400).send(errors);
-    }
+    if (errors.length > 0) return res.status(400).send(errors);
 
     try {
       await eventDbService.insert(event);
