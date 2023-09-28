@@ -1,9 +1,10 @@
 
 # ![Logo](logotipo2.png)
 
-Um casal, ao se deparar com o desafio de organizar o
-próprio casamento, decide fazer uma aplicação web para 
-ajudar na gestão do evento.
+Event2All é uma planejador de casamentos e festas que ajuda a organizar os custos de produção e organização, 
+assim como a lista de convidados e listas de afazeres. O sistema conta ainda com controle de acesso de usuário 
+para que os dados deste fiquem seguros, dando a possibilidade de criar varios eventos por usuário e adicionar outros
+usuários para edição de um evento existente.
 
 ## 📋 Pré-requisitos
 
@@ -16,12 +17,14 @@ Este projeto necessita de alguns passos para ser testado corretamente, conforme 
 ## 🔧 Configurando o servidor
 
     1. Criar um banco de dados vazio no MySql com o nome event2all.
-    2. Acessar via terminal a pasta ./src/ e execute o comando "npm i" 
+    2. Acessar via terminal a pasta raiz do projeto e executar o comando "npm i" 
     para instalar todas as dependências do projeto.
     3. Criar e editar o arquivo .env baseado no arquivo .envMODEL editando
     as inforções entre aspas para que correspondam às configurções do seu 
-    banco de dados recém criado assim como a porta desejado do servidor e salvar.
+    banco de dados recém criado assim como a porta desejada do servidor e salvar.
     4. Rodar o comando "npm run dev".
+
+
 
 ## 📦 Documentação da API
 #### Para consumo da API por Swagger
@@ -31,7 +34,11 @@ Este projeto necessita de alguns passos para ser testado corretamente, conforme 
 
  [![Run in Insomnia}](https://insomnia.rest/images/run.svg)](https://insomnia.rest/run/?label=&uri=https%3A%2F%2Fgithub.com%2Famandahammes%2Fevent_planner%2Fblob%2Fmaster%2FinsomniaButton)
 
+
+
  ## ✒️ Autores
+
+Refatorado inteiramente por  [Giordano Cassini](https://github.com/giordanocassini)
 
 *⌨️ com ❤️ por [Amanda Hammes](https://github.com/amandahammes/)<br/>
 *⌨️ com ❤️ por [Danilo Freitas](https://github.com/danilojpfreitas)<br/>
