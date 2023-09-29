@@ -8,7 +8,7 @@ usuários para edição de um evento existente.
 
 ## 📋 Pré-requisitos
 
-Este projeto necessita de alguns passos para ser testado corretamente, conforme descrito abaixo:<br/>
+    Este projeto necessita de alguns passos para ser testado corretamente, conforme descrito abaixo:<br/>
     0. Caso opte por usar Docker para rodar o projeto, pule todos os passos a seguir e veja as instruções no tópico "Docker".
     Neste caso, você precisará ter o docker instalado na sua máquina.<br/>
     1. Banco de Dados Mysql instalado e configurado no ambiente a ser testado.<br/>
