@@ -9,7 +9,8 @@ usuários para edição de um evento existente.
 ## 📋 Pré-requisitos
 
 Este projeto necessita de alguns passos para ser testado corretamente, conforme descrito abaixo:
-
+    0. Caso opte por usar Docker para rodar o projeto, pule todos os passos a seguir e veja as instruções no tópico "Docker".
+    Neste caso, você precisará ter o docker instalado na sua máquina.
     1. Banco de Dados Mysql instalado e configurado no ambiente a ser testado.
     2. Uma framework client para testes de API. Recomendado ( Insomnia ), para interação com a API.
     3. Um editor de texto, para alteração do arquivo de conexão com o Banco de Dados ( Recomendado VSCODE).
@@ -24,21 +25,18 @@ Este projeto necessita de alguns passos para ser testado corretamente, conforme 
     banco de dados recém criado assim como a porta desejada do servidor e salvar.
     4. Rodar o comando "npm run dev".
 
-
+## 🔧 Docker:
+    Você pode optar por rodar a API através de um container docker também. Para isso basta acessar a pasta raiz do projeto
+    e rodar o comando "docker-compose up". Neste caso, a API está configurada para rodar na porta "3000". Você pode alterar a porta
+    editando o arquivo "docker-compose.yaml" que se encontra na pasta raiz.
 
 ## 📦 Documentação da API
 #### Para consumo da API por Swagger
 [Link do Swagger](https://app.swaggerhub.com/apis/DANILOJPFREITAS_1/Event2All/1.0.0)
-#### Insomnia
-- Caso optes por consumir a API remotamente, atraves do botão abaixo, você será redirecionado para o insomnia para realização dos testes, com todas as rotas já pré-configuradas:
-
- [![Run in Insomnia}](https://insomnia.rest/images/run.svg)](https://insomnia.rest/run/?label=&uri=https%3A%2F%2Fgithub.com%2Famandahammes%2Fevent_planner%2Fblob%2Fmaster%2FinsomniaButton)
-
-
 
  ## ✒️ Autores
 
-Refatorado inteiramente por  [Giordano Cassini](https://github.com/giordanocassini)
+Refatorado inteiramente por [Giordano Cassini](https://github.com/giordanocassini)
 
 *⌨️ com ❤️ por [Amanda Hammes](https://github.com/amandahammes/)<br/>
 *⌨️ com ❤️ por [Danilo Freitas](https://github.com/danilojpfreitas)<br/>
