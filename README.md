@@ -8,12 +8,13 @@ usuários para edição de um evento existente.
 
 ## 📋 Pré-requisitos
 
-    Este projeto necessita de alguns passos para ser testado corretamente, conforme descrito abaixo:<br/>
+    Este projeto necessita de alguns passos para ser testado corretamente, conforme descrito abaixo:
+    
     0. Caso opte por usar Docker para rodar o projeto, pule todos os passos a seguir e veja as instruções no tópico "Docker".
-    Neste caso, você precisará ter o docker instalado na sua máquina.<br/>
-    1. Banco de Dados Mysql instalado e configurado no ambiente a ser testado.<br/>
-    2. Uma framework client para testes de API. Recomendado ( Insomnia ), para interação com a API.<br/>
-    3. Um editor de texto, para alteração do arquivo de conexão com o Banco de Dados ( Recomendado VSCODE).<br/>
+    Neste caso, você precisará ter o docker instalado na sua máquina.
+    1. Banco de Dados Mysql instalado e configurado no ambiente a ser testado.
+    2. Uma framework client para testes de API. Recomendado ( Insomnia ), para interação com a API.
+    3. Um editor de texto, para alteração do arquivo de conexão com o Banco de Dados ( Recomendado VSCODE).
 
 ## 🔧 Configurando o servidor
 
