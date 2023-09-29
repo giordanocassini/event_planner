@@ -32,7 +32,7 @@ usuários para edição de um evento existente.
     editando o arquivo "docker-compose.yaml" que se encontra na pasta raiz.
 
 ## 📦 Documentação da API
-#### Para consumo da API por Swagger
+
 [Link do Swagger](https://app.swaggerhub.com/apis/DANILOJPFREITAS_1/Event2All/1.0.0)
 
  ## ✒️ Autores
