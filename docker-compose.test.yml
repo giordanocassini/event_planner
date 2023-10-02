@@ -1,0 +1,8 @@
+version: '3.8'
+services:
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test # Use the name of your test Dockerfile
+    volumes:
+      - .:/usr/src/app

@@ -15,9 +15,10 @@
     "strict": true,
     "noImplicitAny": true,
     "strictPropertyInitialization": false,
+    "types": ["@types/node", "@types/jest"],
     "typeRoots": ["@types", "./node_modules/@types"]
   },
-  "include": ["src/*/", "src/database/datasourse.ts", "src/@types/express/index.d.ts"],
+  "include": ["src/**/*.ts", "src/database/datasourse.ts", "src/@types/express/index.d.ts"],
   "exclude": ["node_modules", "dist"],
   "ts-node": {
     "files": true

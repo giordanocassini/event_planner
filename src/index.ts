@@ -6,10 +6,10 @@ import routes from "./routes";
 import cors from "cors";
 import helmet from "helmet";
 
+export const app = express();
 
 AppDataSource.initialize()
   .then(() => {
-    const app = express();
 
     app.use(bodyParser.json());
     app.use(express.json())
