@@ -13,7 +13,7 @@ export const findUserByEmail = async (req: UserRequest, res: Response, next: Nex
   try {
     user = await userDbService.findByEmail(email);
   } catch (error) {
-    if (error instanceof Error) return res.status(400).send(error.message);
+    if (error instanceof Error) return res.status(404).send(error.message);
     return res.status(500).send(error);
   }
 
